@@ -2,7 +2,7 @@
 //Es solo para agilizar el llenado de codigo, no es necesario hacerlo
 const {response, request} = require('express');
 const bcryptjs = require('bcryptjs');
-const {validationResult} = require('express-validator')
+// const {validationResult} = require('express-validator')
 
 const User = require('../database/user');
 
@@ -23,12 +23,16 @@ const usersGet = (req = request, res = response) => {
 };
 
 const usersPost = async (req = request, res = response) => {
-    const errors = validationResult(req); //Devuelve en forma de objeto con una propedad llamada formatter (no es importante) y otra errors, la cual, dentro de ella hay un array con las validaciones erroneas. Trae alguna validacion erronea si es que la hay, sino el array se queda vacio.
-    console.log(errors);
+
+    //--------------------------------------------------------------
+    // const errors = validationResult(req); //Devuelve en forma de objeto con una propedad llamada formatter (no es importante) y otra errors, la cual, dentro de ella hay un array con las validaciones erroneas. Trae alguna validacion erronea si es que la hay, sino el array se queda vacio.
+    // console.log(errors);
     //isEmpty() verifica si el array de las validaciones que trajo esta vacio (devuelve true), pero si si trajo validaciones erroneas devuelve false
-    if ( !errors.isEmpty() ) {
-        return res.status(400).json(errors); //Por alguna razon el valor de errors aqui ignora la propiedad "formatter" y no la pone (solo como si estuviera la de errors). En realidad si quieres ignorar todo esto, ignoralo, solo fue para comprender mas el middleware utilizado para validaciones
-    }
+    // if ( !errors.isEmpty() ) {
+    //     return res.status(400).json(errors); //Por alguna razon el valor de errors aqui ignora la propiedad "formatter" y no la pone (solo como si estuviera la de errors). En realidad si quieres ignorar todo esto, ignoralo, solo fue para comprender mas el middleware utilizado para validaciones
+    // }
+    //--------------------------------------------------------------
+    //Debido a que todo lo anterior es muy posible que lo vayamos a utilizar en varias rutas, hay que convertirlo en una funcion mejor no?, en este caso no, en este caso lo podemos convertir en un middleware, debido a que hace uso del req y el res y los middlewares tiene acceso a estos antes de que se llame al controlador
 
     const {name, password, role, email} = req.body;
     const user = new User({name, password, role, email}); //Aqui solo creamos la instancia de la inserccion en la base de datos
