@@ -1,14 +1,20 @@
 
 const {Router} = require('express');
 const { usersGet, usersPost, usersPut, usersPatch, usersDelete } = require('../controllers/users');
-const {check} = require('express-validator');
+const {check, query} = require('express-validator');
 const { validateFields } = require('../middlewares/validate-fields');
 const { validateRole, emailExists, existsIdUser } = require('../helpers/db_validators.js');
 
 
 const router = Router();
 
-router.get('/', usersGet)
+//Importamos query de express-validator para hacer validaciones pero con los parametros query. Recuerda que para hacer validaciones del body y de los parametros normales se utiliza el check()
+//Si no hacemos estas validaciones, tomara los parametros con un valor de NaN y por lo tanto lo tanto, no tirara error, pero si los ignorara y los pondra con sus valores por defecto
+router.get('/', [
+    query('limit', 'limit => must be a number').isNumeric().optional(),
+    query('from', 'from => must be a number').isNumeric().optional(),
+    validateFields
+], usersGet)
 
 router.post('/',[ 
     check('email', 'Invalid email').isEmail(),

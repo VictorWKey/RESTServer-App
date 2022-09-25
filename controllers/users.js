@@ -6,18 +6,18 @@ const bcryptjs = require('bcryptjs');
 
 const User = require('../models/user');
 
-const usersGet = (req = request, res = response) => {
+const usersGet = async (req = request, res = response) => {
 
-    const {q, nombre = 'no name', apikey, page = 1, limit} = req.query;
+    const {limit = 5, from = 0} = req.query;
+
+    const users = await User.find() //Devuelve todos los registros de esa coleccion
+        .limit(Number(limit)) //Limitamos la cantidad de registros que va devolver
+        .skip(Number(from)) //Le decimos despues de cual registro va comenzar a devolver
 
     res.json(
         {
             msg: 'get response - controller',
-            q,
-            nombre,
-            apikey, 
-            page,
-            limit
+            users
         }
     );
 };
