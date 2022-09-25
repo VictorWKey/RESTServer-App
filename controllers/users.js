@@ -10,13 +10,28 @@ const usersGet = async (req = request, res = response) => {
 
     const {limit = 5, from = 0} = req.query;
 
-    const users = await User.find() //Devuelve todos los registros de esa coleccion
-        .limit(Number(limit)) //Limitamos la cantidad de registros que va devolver
-        .skip(Number(from)) //Le decimos despues de cual registro va comenzar a devolver
+    const condition = {state: true}; //Debido a que el state significa si estan o no eliminados de la base de datos, se utiliza esto.
+    
+    //-----------------------------------------------------------------------
+    // Esta forma es valida? si pero como hay dos await que ninguno de ellos depende del otro, nos ahorrariamos tiempo de carga si los ejecutamos al mismo tiempo, para eso se usa Promise.all
+    // const users = await User.find(condition) //Devuelve todos los registros de esa coleccion. Debido al "condition" como parametro, devolvera solo los registros que cuenten con eso de la condicion
+    //     .limit(Number(limit)) //Limitamos la cantidad de registros que va devolver
+    //     .skip(Number(from)) //Le decimos despues de cual registro va comenzar a devolver
+
+    // const total = await User.count(condition);
+    //-----------------------------------------------------------------------
+
+    //Ejecutar y devolver la respuesta de varias promesas al mismo tiempo (dentro de un array):
+    const [total, users] = await Promise.all([
+        User.count(condition),
+        User.find(condition)
+            .limit(limit)
+            .skip(from)    
+    ]) //Esto devolvera un array con las respuesta de sus promesas en sus respectivas posiciones, por eso usamos la destructuracion, para que sea igual la manera de enviar la respuesta a que si usaramos lo de arriba
 
     res.json(
         {
-            msg: 'get response - controller',
+            total,
             users
         }
     );
