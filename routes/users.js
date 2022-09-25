@@ -37,6 +37,9 @@ router.put('/:id',[
 
 router.patch('/', usersPatch);
 
-router.delete('/', usersDelete);
+router.delete('/:id',[
+    check('id').custom(existsIdUser),
+    validateFields
+] , usersDelete);
 
 module.exports = router;

@@ -10,7 +10,7 @@ const usersGet = async (req = request, res = response) => {
 
     const {limit = 5, from = 0} = req.query;
 
-    const condition = {state: true}; //Debido a que el state significa si estan o no eliminados de la base de datos, se utiliza esto.
+    const condition = {state: true}; //Debido a que el state significa si estan o no eliminados de la base de datos, se utiliza esto. Recuerda que cuando eliminamos un usario de la base de datos, no se elimina tal cual (aunque si se puede para yo no se hace eso), solo cambia su estado a false.
     
     //-----------------------------------------------------------------------
     // Esta forma es valida? si pero como hay dos await que ninguno de ellos depende del otro, nos ahorrariamos tiempo de carga si los ejecutamos al mismo tiempo, para eso se usa Promise.all
@@ -97,10 +97,18 @@ const usersPatch = (req = request, res = response) => {
     );
 };
 
-const usersDelete = (req = request, res = response) => {
+const usersDelete = async (req = request, res = response) => {
+    const {id} = req.params;
+
+    // Eliminar fisicamente de la base de datos
+    // const user = await User.findByIdAndDelete(id);
+
+    const user = await User.findByIdAndUpdate(id, {state: false});
+
     res.json(
         {
-            msg: 'delete response - controller'
+            msg: 'delete response - controller',
+            user
         }
     );
 };
