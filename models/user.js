@@ -35,5 +35,11 @@ const UserSchema = Schema({
     }
 });
 
+//Aqui lo que hacemos es modificar lo que regresa la instancia new User, para que la respuesta no regrese "password" ni "__v" ya que el frontend no tiene porque recibir eso. Esto no modificara en lo absoluto la inserccion en la coleccion de la base de datos, solo lo que regresa la instancia.
+UserSchema.methods.toJSON = function() {
+    const {password, __v, ...remain} = this.toObject();
+    return remain;
+};
+
 //Con esto creamos el modelo de usuario y al mismo tiempo le damos el nombre a nuestra coleccion (tabla) en la que haremos estas insercciones en el primer parametro de "model()"
 module.exports = model('User', UserSchema); //Con esto podremos crear instancias de nuestro modelo de usuario y con metodos de esa instancia, enviarlo

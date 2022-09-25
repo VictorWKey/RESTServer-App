@@ -4,7 +4,7 @@ const {response, request} = require('express');
 const bcryptjs = require('bcryptjs');
 // const {validationResult} = require('express-validator')
 
-const User = require('../database/user');
+const User = require('../models/user');
 
 const usersGet = (req = request, res = response) => {
 
@@ -37,14 +37,7 @@ const usersPost = async (req = request, res = response) => {
     const {name, password, role, email} = req.body;
     const user = new User({name, password, role, email}); //Aqui solo creamos la instancia de la inserccion en la base de datos
 
-    // Verificar si el correo existe
-    const emailExists =  await User.findOne({email: email}); //Sin el await devuelve un objeto muy grande con informacion del modelo. Con el await devuelve el registro de la base de datos que cuente con lo pasado dentro del argumento de este metodo, sino devolvera null.
-    console.log(emailExists);
-    if (emailExists) {
-        return res.status(400).json({
-          msg: 'That email is currently registered'  
-        })
-    } 
+
 
     // Encriptar la contraseña 
     const salt = bcryptjs.genSaltSync(10); //10 es el valor por defecto aunque no se lo pongamos. El numero que pongamos como parametro es el numero de vueltas que se le dara la encryptacion, es decir, entre mas vueltas, mas segura la encriptacion, pero el numero intermedio de seguridad es 10.
@@ -60,13 +53,27 @@ const usersPost = async (req = request, res = response) => {
         }
     );
 };
-const usersPut = (req = request, res = response) => {
+
+const usersPut = async (req = request, res = response) => {
+    const {id} = req.params;
+    const {_id, password, google, ...other} = req.body; //el id se saca pq si lo incluimos y le damos otro valor, dara error.
+
+    //Aqui lo que haces es verificar si cambio o no la contraseña, y si si, la encriptamos
+    if (password) {
+        const salt = bcryptjs.genSaltSync(10); //10 es el valor por defecto aunque no se lo pongamos. El numero que pongamos como parametro es el numero de vueltas que se le dara la encryptacion, es decir, entre mas vueltas, mas segura la encriptacion, pero el numero intermedio de seguridad es 10.
+        other.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(id, other); //Aqui lo que hacemos es buscar un registro con el id del parametro, y cambiaremos las propiedades que vengan en "other"
+
     res.json(
         {
-            msg: 'put response - controller'
+            msg: 'put response - controller',
+            user
         }
     );
 };
+
 const usersPatch = (req = request, res = response) => {
     res.json(
         {

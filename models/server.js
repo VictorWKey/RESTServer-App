@@ -16,7 +16,6 @@ class Server {
         //Middlewares
         this.middlewares();
         
-
         //Routes of my application
         this.routes();
     }
