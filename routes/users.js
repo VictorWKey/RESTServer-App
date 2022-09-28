@@ -4,6 +4,7 @@ const { usersGet, usersPost, usersPut, usersPatch, usersDelete } = require('../c
 const {check, query} = require('express-validator');
 const { validateFields } = require('../middlewares/validate-fields');
 const { validateRole, emailExists, existsIdUser } = require('../helpers/db_validators.js');
+const validateJWT = require('../middlewares/validate-jwt');
 
 
 const router = Router();
@@ -38,6 +39,7 @@ router.put('/:id',[
 router.patch('/', usersPatch);
 
 router.delete('/:id',[
+    validateJWT,
     check('id').custom(existsIdUser),
     validateFields
 ] , usersDelete);

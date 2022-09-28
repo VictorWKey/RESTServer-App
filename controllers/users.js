@@ -100,16 +100,15 @@ const usersPatch = (req = request, res = response) => {
 const usersDelete = async (req = request, res = response) => {
     const {id} = req.params;
 
+    const userAuth = req.userAuth;
+
     // Eliminar fisicamente de la base de datos
     // const user = await User.findByIdAndDelete(id);
 
     const user = await User.findByIdAndUpdate(id, {state: false});
 
     res.json(
-        {
-            msg: 'delete response - controller',
-            user
-        }
+        user
     );
 };
 
