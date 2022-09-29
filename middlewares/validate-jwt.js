@@ -25,7 +25,7 @@ const validateJWT = async (req = request, res = response, next) => {
 
         if( !user.state ) {
             return res.status(404).json({
-                msg: 'Invalid token - user with state = false'
+                msg: 'Invalid auth token - user with state = false'
             })
         }
 
@@ -42,4 +42,6 @@ const validateJWT = async (req = request, res = response, next) => {
     }
 };
 
-module.exports = validateJWT;
+module.exports = {
+    validateJWT
+};

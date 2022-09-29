@@ -2,10 +2,20 @@
 const {Router} = require('express');
 const { usersGet, usersPost, usersPut, usersPatch, usersDelete } = require('../controllers/users');
 const {check, query} = require('express-validator');
-const { validateFields } = require('../middlewares/validate-fields');
-const { validateRole, emailExists, existsIdUser } = require('../helpers/db_validators.js');
-const validateJWT = require('../middlewares/validate-jwt');
 
+const { validateRole, emailExists, existsIdUser } = require('../helpers/db_validators.js');
+
+// Una forma mas ordenada de hacer lo siguiente, es usar el index.js de la carpeta middlewares y hacer lo de abajo de esto
+// const { validateJWT } = require('../middlewares/validate-jwt');
+// const { adminRole, haveRole } = require('../middlewares/validate-roles');
+// const { validateFields } = require('../middlewares/validate-fields');
+
+const {
+    validateJWT,
+    adminRole,
+    haveRole,
+    validateFields
+} = require('../middlewares'); //No es necesario especificar cual archivo exactamente, ya que toma por defecto el archivo index.js
 
 const router = Router();
 
@@ -40,6 +50,8 @@ router.patch('/', usersPatch);
 
 router.delete('/:id',[
     validateJWT,
+    // adminRole, //Este a fuerza pedira que el usuario que realiza la accion se admin
+    haveRole('ADMIN_ROLE', 'HELPER_ROLE', 'DEVELOPER_ROLE'), //Este verifica que el usuario que realiza esta accion tenga alguno de estos roles (se pueden pasar x cantidad de roles)
     check('id').custom(existsIdUser),
     validateFields
 ] , usersDelete);
