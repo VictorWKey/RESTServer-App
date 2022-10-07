@@ -32,8 +32,18 @@
         function handleCredentialResponse(response) {
 
            // Google Token (ID TOKEN)
-           console.log(response.credential);
+           // console.log(response.credential);
 
+           const body = { id_token: response.credential }
+
+           // Aqui lo que hacemos es hacer una peticion POST con fetch y enviarle en el body el jwt para poder recibirlo en el controlador de ese mismo endpoint. Aqui no es necesario hacer algo con postman para confirmarlo porque la peticion la estamos haciendo con el fetch. La peticion POST en este endpoint enviara el id_token y ademas en el controlador estamos enviando un msg en caso de que se haga una peticion post ahi, por eso es que fetch regresa las dos cosas. A fuerza tenemos que enviar toda la configuracion del POST con fetch 
+           fetch("http://localhost:8080/api/auth/google", {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json' 
+               },
+               body: JSON.stringify(body)
+           }).then(res => res.json()).then(res => console.log(res)).catch( console.warn );
         }
       </script>
 </body>
