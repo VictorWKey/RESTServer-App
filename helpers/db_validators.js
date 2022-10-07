@@ -10,8 +10,8 @@ const validateRole = async (role = '') => { //En este caso creamos nuestra propi
 }
 
 const emailExists = async (email = '') => {
-        const existsRole =  await User.findOne({email: email}); //Sin el await devuelve un objeto muy grande con informacion del modelo. Con el await devuelve el registro de la base de datos que cuente con lo pasado dentro del argumento de este metodo, sino devolvera null.
-        if (existsRole) throw new Error('This email is actually registered in our DB');
+        const existsEmail =  await User.findOne({email: email}); //Sin el await devuelve un objeto muy grande con informacion del modelo. Con el await devuelve el registro de la base de datos que cuente con lo pasado dentro del argumento de este metodo, sino devolvera null.
+        if (existsEmail) throw new Error('This email is actually registered in our DB');
 
 }
 //Esta funcion remplaza la de abajo para evitar un error. El error consistia que al poner un id que no es de tipo moongose,tiraba el error del check().isMongoID() y al mismo tiempo tiraba un error de CAST, ya que lo que hace findByID es buscar con base al _id, osea al id de tipo moongose. Si no entiendes esto ignoralo. Si quieres entenderlo regresa a la clase 128 y ve los comments
