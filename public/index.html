@@ -42,8 +42,9 @@
                headers: {
                    'Content-Type': 'application/json' 
                },
-               body: JSON.stringify(body)
-           }).then(res => res.json()).then(res => console.log(res)).catch( console.warn );
+               body: JSON.stringify(body) // Cuando hacemos un post debemos enviar la info serializada. Aqui solo enviamos la info por el body (y la recibe {id_token} = req.body en el controlador), pero lo que realmente fetch muestra en su respuesta, es la respuesta enviada en el controlador.
+           }).then(res => res.json()).then(res => console.log(res)).catch( console.warn ); 
+           // Con esto, el id_token podra ser controlado por nosotros en el backend (en el controlador)
         }
       </script>
 </body>

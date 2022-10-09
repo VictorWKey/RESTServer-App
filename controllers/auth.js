@@ -1,6 +1,7 @@
 const bcryptjs = require('bcryptjs');
-const { response, request } = require("express");
+const { response, request, json } = require("express");
 const generateJWT = require('../helpers/generate-jwt.js');
+const { googleVerify } = require('../helpers/google-verify.js');
 const User = require('../models/user.js');
 
 const login = async (req = request, res = response) => {
@@ -32,7 +33,8 @@ const login = async (req = request, res = response) => {
         }
 
         //Enviar JWT
-        const token = await generateJWT(user.id);
+        const token = await generateJWT(user.id); // Ention que user.id no exista pero si ponemos user._uid nos devolver un objeto raro, pero para obtener directamente el id se utiliza esta forma: user.id
+        console.log(user);
 
 
         res.json({
@@ -49,13 +51,55 @@ const login = async (req = request, res = response) => {
     }
 };
 
-const googleSignIn = (req, res = response) => {
+const googleSignIn = async (req, res = response) => {
     const {id_token } = req.body;
 
-    res.status(200).json({
-        msg: 'All right',
-        id_token
-    })
+    try {
+
+        const {name, email, img} = await googleVerify(id_token);
+        
+        let user = await User.findOne({email});
+
+        if ( !user ) {
+            const data = {
+                name,
+                email,
+                img,
+                password: 'p455w0rd',
+                role: 'USER_ROLE',
+                google: true
+            };
+
+            user = new User (data);
+            await user.save();
+        }
+
+        if( !user.state) {
+            return res.status(401).json({
+                msg: 'Talk with the admin, the user was blocked',
+            })
+        }
+
+        //Enviar JWT
+        const token = await generateJWT(user.id);
+        console.log(token);
+
+        res.status(200).json({
+            msg: 'All right! google sign-in',
+            token
+        })
+
+    } catch ( err ) {
+
+        res.status(400).json(
+            {
+                ok: false,
+                msg: 'Token cannot be verified'
+            }
+        )
+    }
+
+
 };
 
 module.exports = {
