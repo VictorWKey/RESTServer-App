@@ -13,7 +13,10 @@
     <div id="g_id_onload"
         data-client_id="1019368013197-5c7qtbigc3fttadg5jqv7mgolathb424.apps.googleusercontent.com"
         data-auto_prompt="false"
-        data-callback="handleCredentialResponse">
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false"
+        data-auto_select="true">
+        
         
     </div>
     <div class="g_id_signin"
@@ -25,9 +28,12 @@
         data-logo_alignment="left">
     </div>
 
+    <button id="google_signout">
+        sign out 
+    </button>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+   
     <script>
         function handleCredentialResponse(response) {
 
@@ -37,15 +43,38 @@
            const body = { id_token: response.credential }
 
            // Aqui lo que hacemos es hacer una peticion POST con fetch y enviarle en el body el jwt para poder recibirlo en el controlador de ese mismo endpoint. Aqui no es necesario hacer algo con postman para confirmarlo porque la peticion la estamos haciendo con el fetch. La peticion POST en este endpoint enviara el id_token y ademas en el controlador estamos enviando un msg en caso de que se haga una peticion post ahi, por eso es que fetch regresa las dos cosas. A fuerza tenemos que enviar toda la configuracion del POST con fetch 
-           fetch("http://localhost:8080/api/auth/google", {
+           fetch(window.location.hostname.includes('localhost') ? 'http://localhost:8080/api/auth/google': 'https://rest-server-crs.herokuapp.com/api/auth/google', {
                method: 'POST',
                headers: {
                    'Content-Type': 'application/json' 
                },
                body: JSON.stringify(body) // Cuando hacemos un post debemos enviar la info serializada. Aqui solo enviamos la info por el body (y la recibe {id_token} = req.body en el controlador), pero lo que realmente fetch muestra en su respuesta, es la respuesta enviada en el controlador.
-           }).then(res => res.json()).then(res => console.log(res)).catch( console.warn ); 
+           }).then(res => res.json()).then(res => {
+
+               console.log(res);
+               localStorage.setItem('email', res.user.email );
+
+           }).catch( console.warn ); 
            // Con esto, el id_token podra ser controlado por nosotros en el backend (en el controlador)
+
         }
+
+        const button = document.getElementById('google_signout');
+
+        button.addEventListener('click', () => {
+            console.log(google.accounts.id);
+            google.accounts.id.disableAutoSelect();
+;
+
+            google.accounts.id.revoke( localStorage.getItem('email'), done => {
+                localStorage.clear();
+                location.reload();
+            });
+        });
+        
       </script>
+
+      <script src="https://accounts.google.com/gsi/client" async defer></script>
+
 </body>
 </html>
