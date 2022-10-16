@@ -1,6 +1,6 @@
 const Role = require('../models/role.js');
-const User = require('../models/user.js');
 const mongoose = require('mongoose');
+const { Category, User, Product } = require('../models');
 
 const validateRole = async (role = '') => { //En este caso creamos nuestra propia validacion. El parametro que va dentro del callback es igual al valor que se manda en el body.
     const existsRole = await Role.findOne({role: role});
@@ -27,16 +27,44 @@ const existsIdUser= async (id) => {
         const existId = await User.findById(id);
 
         if (!existId) {
-            throw new Error(`El id  ${id}  no existe en la BD`);
+            throw new Error(`The id ${id} doesn´t exists in Users DB`);
         }
         
     } else {
-        throw new Error(`El id ${id} no es válido`);
+        throw new Error(`Id ${id} invalid`);
     }
 }
+
+const existsIdCategory = async ( id ) => {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        const existId = await Category.findById(id);
+
+        if (!existId) {
+            throw new Error(`The id ${id} doesn´t exists in Categories DB`);
+        }
+        
+    } else {
+        throw new Error(`category ID invalid`);
+    }
+};
+
+const existsIdProduct = async ( id ) => {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+        const existId = await Product.findById(id);
+
+        if (!existId) {
+            throw new Error(`The id ${id} doesn´t exists in Product DB`);
+        }
+        
+    } else {
+        throw new Error(`product ID invalid`);
+    }
+};
 
 module.exports = {
     validateRole,
     emailExists,
-    existsIdUser    
+    existsIdUser,
+    existsIdCategory,
+    existsIdProduct    
 }
