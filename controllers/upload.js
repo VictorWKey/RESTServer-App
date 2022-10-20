@@ -1,5 +1,6 @@
 const { response, request } = require("express");
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -24,11 +25,11 @@ const upload = async (req = request, res = response) => {
         })
     }
 
-    res.json({extension});
-  
-    The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
     
-    const uploadPath = path.join(__dirname, '../uploads', file.name);
+  
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+    const tempName = uuidv4() + '.' + extension;
+    const uploadPath = path.join(__dirname, '../uploads', tempName);
   
     // Use the mv() method to place the file somewhere on your server
     file.mv(uploadPath, (err) => {
