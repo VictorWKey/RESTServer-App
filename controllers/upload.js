@@ -1,48 +1,40 @@
 const { response, request } = require("express");
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const { uploadFile } = require("../helpers");
 
 
 
 const upload = async (req = request, res = response) => {  
-
-    const  { file } = req.files ;
 
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({
         msg: 'No files were uploaded'
       });
     }
+    try { //Debido a que la promesa del uploadFile() puede regresar un reject, ese reject lo manejamos con un try y catch
+      const fileName = await uploadFile(req.files, undefined, 'imgs'); // Se pone undefined si no queremos utilizar esa propiedad y que utilice el valor que viene por defecto. Si no tiene un valor por defecto entonces ahi su valor si sera undefined y tirara un error  
 
-    const nameFileCut = file.name.split('.');
-    const extension = nameFileCut[ nameFileCut.length - 1];
-
-    const validExtensions = ['jpg', 'png', 'jfif'];
-
-    if( !validExtensions.includes(extension)) {
-        return res.status(400).json({
-            msg: `The extension ${extension} is not allowed, only ${validExtensions}`
-        })
-    }
-
-    
-  
-    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-    const tempName = uuidv4() + '.' + extension;
-    const uploadPath = path.join(__dirname, '../uploads', tempName);
-  
-    // Use the mv() method to place the file somewhere on your server
-    file.mv(uploadPath, (err) => {
-      if (err) return res.status(500).json({
-        msg: err
-      });
-  
       res.json({
-        msg: `File uploaded to ${uploadPath}`
-      });
-    });
+        fileName
+      })
+
+    } catch (err) {
+      res.status(400).json({
+        err
+      })
+    }
 };
 
+const updateImage = async ( req = request, res = response ) => {
+    const {id, collection} = req.params;
+
+    res.status(200).json({
+        id,
+        collection
+    })
+}
+
 module.exports = {
-    upload
+    upload,
+    updateImage
 }

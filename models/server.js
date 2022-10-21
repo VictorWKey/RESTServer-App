@@ -45,7 +45,11 @@ class Server {
         this.app.use(express.static('public'));
 
         // Upload files 
-        this.app.use(fileUpload());
+        this.app.use(fileUpload({
+            useTempFiles : true,
+            tempFileDir : '/tmp/',
+            createParentPath: true // Cuando intentemos guardar un archivo en una carpeta que no esta creada, esta propiedad hace que la carpeta se cree automaticamente y asi no nos tira un error
+        }));
     }
 
     routes(){

@@ -61,8 +61,19 @@ const existsIdProduct = async ( id ) => {
     }
 };
 
+const validCollections = (collection = '', validCollections = []) => {
+
+    if(!validCollections.includes(collection)) {
+        throw new Error('Invalid collection');
+    }
+
+    return true;
+
+}
+
 module.exports = {
     validateRole,
+    validCollections,
     emailExists,
     existsIdUser,
     existsIdCategory,
