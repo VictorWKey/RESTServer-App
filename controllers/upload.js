@@ -160,10 +160,7 @@ const showImage = async ( req = request, res = response ) => {
   // Limpiar imagenes previas
 
   if( model.img ) {
-    const pathImg = path.join(__dirname, '../uploads', collection, model.img);
-    if(fs.existsSync(pathImg)){
-      return res.sendFile(pathImg); // Elimina el archivo
-    }
+    return res.json({ img: model.img})
   } 
 
   const pathImg = path.join(__dirname, '../assets/no-image.jpg');
