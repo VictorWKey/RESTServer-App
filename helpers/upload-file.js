@@ -3,6 +3,7 @@ const path = require('path');
 
 const uploadFile = (files, validExtensions = ['jpg', 'png', 'jfif'], directory = '') => {
     return new Promise((res, rej) => {
+
         const  { file } = files ;
 
         const nameFileCut = file.name.split('.');
